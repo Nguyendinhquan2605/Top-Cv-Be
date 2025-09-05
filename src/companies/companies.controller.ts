@@ -11,9 +11,8 @@ import {
 import { CompaniesService } from './companies.service';
 import { CreateCompanyDto } from './dto/create-company.dto';
 import { UpdateCompanyDto } from './dto/update-company.dto';
-import { User } from 'src/decorator/customize';
+import { ResponseMessage, User } from 'src/decorator/customize';
 import { IUser } from 'src/user/users.interface';
-import { query } from 'express';
 
 @Controller('companies')
 export class CompaniesController {
@@ -27,6 +26,7 @@ export class CompaniesController {
 
   // Find All Company and Pagination
   @Get()
+  @ResponseMessage('Fetch list Company with paginate')
   findAll(
     @Query('page') currentPage: string,
     @Query('limit') limit: string,
