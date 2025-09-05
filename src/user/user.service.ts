@@ -6,15 +6,17 @@ import {
 import { CreateUserDto, RegisterUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectModel } from '@nestjs/mongoose';
-import { User, UserDocument } from './schemas/user_schema';
+import { User as UserM, UserDocument } from './schemas/user_schema';
 import mongoose, { Model } from 'mongoose';
 import { genSaltSync, hashSync, compareSync } from 'bcryptjs';
 import { SoftDeleteModel } from 'soft-delete-plugin-mongoose';
+import { IUser } from './users.interface';
+import { User } from 'src/decorator/customize';
 
 @Injectable()
 export class UsersService {
   constructor(
-    @InjectModel(User.name) private userModel: SoftDeleteModel<UserDocument>,
+    @InjectModel(UserM.name) private userModel: SoftDeleteModel<UserDocument>,
   ) {}
 
   getHashPassword = (password: string) => {
@@ -24,15 +26,31 @@ export class UsersService {
   };
 
   // Create a new user
-  async create(createUserDto: CreateUserDto) {
-    const hashPassword = this.getHashPassword(createUserDto.password);
+  async create(createUserDto: CreateUserDto, @User() user: IUser) {
+    const { name, email, password, age, gender, address, role, company } =
+      createUserDto;
+    // Check email
+    const isExist = await this.userModel.findOne({ email: email });
+    if (isExist) {
+      throw new BadRequestException('Email đã tồn tại!');
+    }
+    const hashPassword = this.getHashPassword(password);
 
-    let user = await this.userModel.create({
-      email: createUserDto.email,
+    let Newuser = await this.userModel.create({
+      name,
+      email,
       password: hashPassword,
-      name: createUserDto.name,
+      age,
+      gender,
+      address,
+      role,
+      company,
+      createdBy: {
+        _id: user._id,
+        email: user.email,
+      },
     });
-    return user;
+    return Newuser;
   }
 
   // Register a new User

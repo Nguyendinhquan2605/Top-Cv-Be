@@ -33,7 +33,7 @@ export class CreateUserDto {
   gender: number;
 
   @IsNotEmpty({ message: 'Address không được để trống!' })
-  address: number;
+  address: string;
 
   @IsNotEmpty({ message: 'Role không được để trống!' })
   role: string;

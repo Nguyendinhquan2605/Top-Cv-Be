@@ -10,14 +10,23 @@ import {
 import { UsersService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { ResponseMessage, User } from 'src/decorator/customize';
+import { IUser } from './users.interface';
 
 @Controller('users')
 export class UserController {
   constructor(private readonly userService: UsersService) {}
 
+  // Create a new User
   @Post()
-  create(@Body() createUserDto: CreateUserDto) {
-    return this.userService.create(createUserDto);
+  @ResponseMessage('Create a new User')
+  async create(@Body() createUserDTO: CreateUserDto, @User() user: IUser) {
+    let newUser = await this.userService.create(createUserDTO, user);
+
+    return {
+      _id: newUser?._id,
+      createdAt: newUser?.createdAt,
+    };
   }
 
   @Get()
