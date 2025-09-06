@@ -12,6 +12,7 @@ import { genSaltSync, hashSync, compareSync } from 'bcryptjs';
 import { SoftDeleteModel } from 'soft-delete-plugin-mongoose';
 import { IUser } from './users.interface';
 import { User } from 'src/decorator/customize';
+import aqp from 'api-query-params';
 
 @Injectable()
 export class UsersService {
@@ -76,21 +77,44 @@ export class UsersService {
     return newRegister;
   }
 
-  // Get All Users
-  findAll() {
-    return this.userModel.find();
+  // Fetch all user with paginate
+  async findAll(currentpage: number, limit: number, qs: string) {
+    const { filter, sort, population } = aqp(qs);
+    delete filter.page;
+    delete filter.limit;
+
+    let offset = (+currentpage - 1) * +limit;
+    let defaultLimit = +limit ? +limit : 3;
+    const totalItems = (await this.userModel.find(filter)).length;
+    const totalPages = Math.ceil(totalItems / defaultLimit);
+
+    const result = await this.userModel
+      .find(filter)
+      .skip(offset)
+      .limit(defaultLimit)
+      .sort(sort as any)
+      .select('-password')
+      .populate(population)
+      .exec();
+
+    return {
+      meta: {
+        current: currentpage, //trang hiện tại
+        pageSize: limit, //số lượng bản ghi đã lấy
+        pages: totalPages, //tổng số trang với điều kiện query
+        total: totalItems, // tổng số phần tử (số bản ghi)
+      },
+      result, //kết quả query
+    };
   }
 
-  // Get user by id
-  findOne(id: string) {
-    try {
-      return this.userModel.findOne({
-        _id: id,
-      });
-    } catch (error) {
-      console.log('check error: ', error);
-      return 'not found user';
+  // Fetch a user by id
+  async findOne(id: string) {
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return 'Not found user!';
     }
+
+    return await this.userModel.findOne({ _id: id }).select('-password');
   }
 
   // Get user by username
@@ -106,20 +130,35 @@ export class UsersService {
   }
 
   // Update a user by id
-  async update(updateUserDto: UpdateUserDto) {
-    return await this.userModel.updateOne(
+  async update(updateUserDto: UpdateUserDto, user: IUser) {
+    const updated = await this.userModel.updateOne(
       { _id: updateUserDto._id },
       {
         ...updateUserDto,
+        updatedBy: {
+          _id: user._id,
+          email: user.email,
+        },
       },
     );
+    return updated;
   }
 
   // Delete a user by id
-  remove(id: string) {
+  async remove(id: string, user: IUser) {
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return 'Not found user!';
     }
+
+    await this.userModel.updateOne(
+      { _id: id },
+      {
+        deletedBy: {
+          _id: user._id,
+          email: user.email,
+        },
+      },
+    );
 
     return this.userModel.softDelete({ _id: id });
   }
