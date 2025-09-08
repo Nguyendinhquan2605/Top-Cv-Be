@@ -80,8 +80,8 @@ export class UsersService {
   // Fetch all user with paginate
   async findAll(currentpage: number, limit: number, qs: string) {
     const { filter, sort, population } = aqp(qs);
-    delete filter.page;
-    delete filter.limit;
+    delete filter.current;
+    delete filter.pageSize;
 
     let offset = (+currentpage - 1) * +limit;
     let defaultLimit = +limit ? +limit : 3;
