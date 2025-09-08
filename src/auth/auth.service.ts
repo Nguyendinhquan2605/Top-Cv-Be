@@ -129,4 +129,11 @@ export class AuthService {
       throw new BadRequestException(`RefreshToken Không hợp lệ!`);
     }
   };
+
+  // Logout User
+  logout = async (response: Response, user: IUser) => {
+    await this.usersService.updateUserToken('', user._id);
+    response.clearCookie('refreshToken');
+    return 'ok';
+  };
 }

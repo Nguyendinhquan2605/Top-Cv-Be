@@ -11,7 +11,7 @@ import { AuthService } from './auth.service';
 import { Public, ResponseMessage, User } from 'src/decorator/customize';
 import { LocalAuthGuard } from './local-auth.guard';
 import { RegisterUserDto } from 'src/user/dto/create-user.dto';
-import { Request, Response } from 'express';
+import { Request, response, Response } from 'express';
 import { IUser } from 'src/user/users.interface';
 
 @Controller('auth')
@@ -51,5 +51,15 @@ export class AuthController {
   ) {
     const refreshToken = request.cookies['refreshToken'];
     return this.authService.processNewToken(refreshToken, response);
+  }
+
+  // Logout User
+  @ResponseMessage('Logout User ')
+  @Post('/logout')
+  handleLogOut(
+    @Res({ passthrough: true }) response: Response,
+    @User() user: IUser,
+  ) {
+    return this.authService.logout(response, user);
   }
 }
