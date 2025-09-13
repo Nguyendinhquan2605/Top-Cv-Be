@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadGatewayException, Injectable } from '@nestjs/common';
 import { CreateCompanyDto } from './dto/create-company.dto';
 import { UpdateCompanyDto } from './dto/update-company.dto';
 import { InjectModel } from '@nestjs/mongoose';
@@ -6,6 +6,7 @@ import { Company, CompanyDocument } from './schema/company.schema';
 import { SoftDeleteModel } from 'soft-delete-plugin-mongoose';
 import { IUser } from 'src/user/users.interface';
 import aqp from 'api-query-params';
+import mongoose from 'mongoose';
 @Injectable()
 export class CompaniesService {
   constructor(
@@ -54,8 +55,12 @@ export class CompaniesService {
     };
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} company`;
+  // Find one company by id
+  async findOne(id: string) {
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      throw new BadGatewayException(`not found company by ${id}`);
+    }
+    return await this.companyModel.findById(id);
   }
 
   // Update a Company
