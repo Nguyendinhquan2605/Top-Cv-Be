@@ -1,6 +1,9 @@
 import { IsEmail, IsNotEmpty } from 'class-validator';
 
 export class CreateCompanyDto {
+  @IsNotEmpty({ message: 'Logo không được để trống!' })
+  logo: string;
+
   @IsNotEmpty({ message: 'Tên công ty không được để trống!' })
   name: string;
 

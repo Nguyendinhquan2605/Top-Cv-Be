@@ -27,6 +27,7 @@ export class JobsService {
       startDate,
       endDate,
       isActive,
+      location,
     } = createJobDto;
 
     let newjob = await this.jobModel.create({
@@ -40,6 +41,7 @@ export class JobsService {
       startDate,
       endDate,
       isActive,
+      location,
       createdBy: {
         _id: user._id,
         name: user.name,
