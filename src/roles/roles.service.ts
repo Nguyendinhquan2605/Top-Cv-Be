@@ -110,8 +110,9 @@ export class RolesService {
 
   // Delete a role
   async remove(id: string, user: IUser) {
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-      return 'Not found role!';
+    const foundRole = await this.roleModel.findById(id);
+    if (foundRole.name === 'ADMIN') {
+      throw new BadRequestException('Không thể xóa role ADMIN!');
     }
 
     await this.roleModel.updateOne(
