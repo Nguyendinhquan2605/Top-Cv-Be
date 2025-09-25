@@ -11,6 +11,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { IUser } from 'src/user/users.interface';
 import aqp from 'api-query-params';
 import mongoose from 'mongoose';
+import { ADMIN_ROLE } from 'src/databases/Sample';
 
 @Injectable()
 export class RolesService {
@@ -80,7 +81,10 @@ export class RolesService {
       throw new BadGatewayException('not found role');
     }
 
-    const data = await this.roleModel.findById(id);
+    const data = (await this.roleModel.findById(id)).populate({
+      path: 'permissions',
+      select: { _id: 1, name: 1, apiPath: 1, method: 1, module: 1 },
+    });
     return data;
   }
 
@@ -111,7 +115,7 @@ export class RolesService {
   // Delete a role
   async remove(id: string, user: IUser) {
     const foundRole = await this.roleModel.findById(id);
-    if (foundRole.name === 'ADMIN') {
+    if (foundRole.name === ADMIN_ROLE) {
       throw new BadRequestException('Không thể xóa role ADMIN!');
     }
 
