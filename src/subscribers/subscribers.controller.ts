@@ -43,7 +43,7 @@ export class SubscribersController {
   @Get(':id')
   @ResponseMessage('Fetch subscriber by id')
   findOne(@Param('id') id: string) {
-    return this.subscribersService.findOne(+id);
+    return this.subscribersService.findOne(id);
   }
 
   // Update a subscriber by id
@@ -54,12 +54,12 @@ export class SubscribersController {
     @Body() updateSubscriberDto: UpdateSubscriberDto,
     @User() user: IUser,
   ) {
-    return this.subscribersService.update(+id, updateSubscriberDto, user);
+    return this.subscribersService.update(id, updateSubscriberDto, user);
   }
 
   // Delete a subscriber by id
   @Delete(':id')
   remove(@Param('id') id: string, @User() user: IUser) {
-    return this.subscribersService.remove(+id, user);
+    return this.subscribersService.remove(id, user);
   }
 }

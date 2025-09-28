@@ -69,7 +69,7 @@ export class SubscribersService {
   }
 
   // Fetch subscriber by id
-  async findOne(id: number) {
+  async findOne(id: string) {
     if (!mongoose.Types.ObjectId.isValid(id)) {
       throw new BadGatewayException('not found subscriber');
     }
@@ -80,7 +80,7 @@ export class SubscribersService {
 
   // Update a subscriber by id
   async update(
-    id: number,
+    id: string,
     updateSubscriberDto: UpdateSubscriberDto,
     user: IUser,
   ) {
@@ -101,7 +101,7 @@ export class SubscribersService {
   }
 
   // Delete a subscriber
-  async remove(id: number, user: IUser) {
+  async remove(id: string, user: IUser) {
     if (!mongoose.Types.ObjectId.isValid(id)) {
       throw new BadGatewayException('not found subscriber');
     }
