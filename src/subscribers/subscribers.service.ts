@@ -79,16 +79,9 @@ export class SubscribersService {
   }
 
   // Update a subscriber by id
-  async update(
-    id: string,
-    updateSubscriberDto: UpdateSubscriberDto,
-    user: IUser,
-  ) {
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-      throw new BadGatewayException('not found subscriber');
-    }
+  async update(updateSubscriberDto: UpdateSubscriberDto, user: IUser) {
     const updated = await this.subscriberModel.updateOne(
-      { _id: id },
+      { email: user.email },
       {
         ...updateSubscriberDto,
         updatedBy: {
@@ -96,6 +89,7 @@ export class SubscribersService {
           email: user.email,
         },
       },
+      { upsert: true },
     );
     return updated;
   }
@@ -117,5 +111,11 @@ export class SubscribersService {
     );
 
     return this.subscriberModel.softDelete({ _id: id });
+  }
+
+  // Get subcriber's skills
+  async getSkills(user: IUser) {
+    const { email } = user;
+    return this.subscriberModel.findOne({ email: email }, { skills: 1 });
   }
 }
