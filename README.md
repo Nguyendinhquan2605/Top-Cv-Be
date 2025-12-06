@@ -31,19 +31,20 @@ Tạo file `.env` trong thư mục gốc của dự án với các biến môi t
 
 ```env
 # Database Configuration
-PORT=8080
-MONGO_URI=mongodb+srv://<DBName>:<DBPassword>@cluster0.dxsbq.mongodb.net/top_cv
-EMAIL_ADMIN=admin@gmail.com
+PORT=8000
+MONGO_URL=mongodb+srv://quannd:0904663861qq@cluster0.hergrkv.mongodb.net/NestJs
 
-# JWT Configuration
-JWT_ACCESS_TOKEN_SECRET=your-super-secret-jwt-key-here
-JWT_ACCESS_EXPIRE=7d
-JWT_REFRESH_TOKEN_SECRET=your-super-secret-refresh-key-here
-JWT_REFRESH_EXPIRE=30d
+# Access Token
+JWT_ACCESS_TOKEN_SECRET=JUSTASECRET
+JWT_ACCESS_EXPIRE=100m
 
-# Init sample data
+# Refresh Token
+JWT_REFRESH_TOKEN_SECRET=JUSTASECRET
+JWT_REFRESH_EXPIRE=1d
+
+#init sample data
 SHOULD_INIT=true
-INIT_PASSWORD=123456 
+INIT_PASSWORD=123456
 
 # Config mail
 EMAIL_HOST=smtp.gmail.com
